@@ -11,6 +11,7 @@ class SubscribeController extends Controller
 {
     public function index()
     {
+
         try {
             $subscribe = Subscribe::get();
             return response()->json([
