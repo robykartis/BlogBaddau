@@ -1,0 +1,62 @@
+<?php
+
+namespace App\Http\Controllers\Frontend;
+
+use App\Http\Controllers\Controller;
+use App\Models\Comment;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
+class CommentController extends Controller
+{
+    public function store(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => ['required'],
+            'email' => ['required', 'email'],
+            'comment' => ['required'],
+
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => true,
+                'message' => $validator->errors()->all()
+            ]);
+        } else {
+            $result = Comment::create([
+                'post_id' => $id,
+                'name' => $request->name,
+                'email' => $request->email,
+                'comment' => $request->comment,
+
+            ]);
+            if ($result) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Comment Successfully'
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Some Problem'
+                ]);
+            }
+        }
+    }
+    public function getComments()
+    {
+        try {
+            $comment = Comment::orderBy('id', 'desc')->get();
+            return response()->json([
+                'success' => true,
+                'comment' => $comment
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+}
